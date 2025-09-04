@@ -1,0 +1,16 @@
+:root { --brand: #004aad; }
+
+* { box-sizing: border-box; }
+body { font-family: 'Nunito', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+
+header h1 { font-weight: 700; }
+#tabsAcciones .nav-link { font-weight: 600; }
+
+/* Tarjetas auxiliares */
+.card { border: 1px solid #e9ecef; }
+
+/* Historial / gráfico panel spacing */
+#panelHistorial, #panelGrafico { border: 1px solid #e9ecef; }
+
+/* Estados */
+.display-4 { font-weight: 700; }
