@@ -1,7 +1,7 @@
 // ===============================
 // Helpers generales
 // ===============================
-const $  = (s) => document.querySelector(s);
+const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
 const fmt = (n) => {
@@ -17,9 +17,9 @@ function swap(hideSel, showSel) { hide(hideSel); show(showSel); }
 // Estado 
 // ===============================
 const STATE_KEY = 'bank_state_v1';
-const PIN_OK    = /^\d{4}$/;           // Validación de 4 dígitos
+const PIN_OK = /^\d{4}$/;           // Validación de 4 dígitos
 const DEMO_OWNER = 'Ash Ketchum';
-const DEMO_ACC   = '001-234-567';
+const DEMO_ACC = '001-234-567';
 
 let state = loadState() || {
   ownerName: DEMO_OWNER,
@@ -29,7 +29,7 @@ let state = loadState() || {
 };
 
 function saveState() {
-  try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch {}
+  try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch { }
 }
 function loadState() {
   try { return JSON.parse(localStorage.getItem(STATE_KEY)); } catch { return null; }
@@ -39,13 +39,13 @@ function loadState() {
 // Interfaz Gráfica
 // ===============================
 function renderUser() {
-  $('#ownerName').textContent     = state.ownerName;
+  $('#ownerName').textContent = state.ownerName;
   $('#accountNumber').textContent = state.accountNumber;
   $('#userInfo').classList.remove('d-none');
 }
 
 function renderSaldo() {
-  $('#saldoActual').textContent  = fmt(state.balance);
+  $('#saldoActual').textContent = fmt(state.balance);
   $('#saldoSidebar').textContent = fmt(state.balance);
 }
 
@@ -80,9 +80,9 @@ function getTotalsByType() {
   let deps = 0, rets = 0, pays = 0;
   for (const m of state.moves) {
     const amt = Number(m.amount) || 0;
-    if (m.type === 'Depósito') deps += Math.max(0,  amt);
-    if (m.type === 'Retiro')   rets += Math.abs(Math.min(0, amt));
-    if (m.type === 'Pago')     pays += Math.abs(Math.min(0, amt));
+    if (m.type === 'Depósito') deps += Math.max(0, amt);
+    if (m.type === 'Retiro') rets += Math.abs(Math.min(0, amt));
+    if (m.type === 'Pago') pays += Math.abs(Math.min(0, amt));
   }
   return [deps, rets, pays];
 }
@@ -185,7 +185,7 @@ function payService(service, amount) {
 // ===============================
 // Navegación / inicio
 // ===============================
-function showLogin()     { swap('#view-dashboard', '#view-login'); }
+function showLogin() { swap('#view-dashboard', '#view-login'); }
 function showDashboard() {
   swap('#view-login', '#view-dashboard');
   renderUser();

@@ -1,16 +1,69 @@
-:root { --brand: #004aad; }
+/* ==============================
+   Variables
+============================== */
+:root {
+    --brand: #004aad;
+}
 
-* { box-sizing: border-box; }
-body { font-family: 'Nunito', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+/* ==============================
+   Global
+============================== */
+* {
+    box-sizing: border-box;
+}
 
-header h1 { font-weight: 700; }
-#tabsAcciones .nav-link { font-weight: 600; }
+html, body {
+    height: 100%;
+    margin: 0;
+}
 
-/* Tarjetas auxiliares */
-.card { border: 1px solid #e9ecef; }
+body {
+    font-family: 'Nunito', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 
-/* Historial / gráfico panel spacing */
-#panelHistorial, #panelGrafico { border: 1px solid #e9ecef; }
+main {
+    flex: 1; /* ocupa el espacio disponible */
+}
 
-/* Estados */
-.display-4 { font-weight: 700; }
+/* ==============================
+   Header
+============================== */
+header h1 {
+    font-weight: 700;
+}
+
+/* ==============================
+   Navegación
+============================== */
+#tabsAcciones .nav-link {
+    font-weight: 600;
+}
+
+/* ==============================
+   Tarjetas / paneles
+============================== */
+.card {
+    border: 1px solid #e9ecef;
+}
+
+#panelHistorial,
+#panelGrafico {
+    border: 1px solid #e9ecef;
+}
+
+/* ==============================
+   Tipografía / Estados
+============================== */
+.display-4 {
+    font-weight: 700;
+}
+
+/* ==============================
+   Footer
+============================== */
+footer {
+    margin-top: auto; /* empuja el footer hacia abajo */
+}

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8" />
   <title>Pokémon Bank – Cajero</title>
@@ -13,6 +14,7 @@
   <!-- Estilos propios -->
   <link rel="stylesheet" href="estilos.css" />
 </head>
+
 <body class="bg-light">
 
   <!-- Header -->
@@ -40,14 +42,8 @@
               <form id="frmLogin" novalidate>
                 <div class="form-group">
                   <label for="pin">PIN</label>
-                  <input type="password"
-                         inputmode="numeric"
-                         pattern="\d{4}"
-                         maxlength="4"
-                         class="form-control"
-                         id="pin"
-                         placeholder="••••"
-                         required>
+                  <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" class="form-control" id="pin"
+                    placeholder="••••" required>
                   <small class="form-text text-muted">Solo números (4 dígitos).</small>
                   <div class="invalid-feedback">Ingrese un PIN válido de 4 dígitos.</div>
                 </div>
@@ -68,7 +64,8 @@
         <div class="col-lg-8 mb-4">
           <!-- Tabs de acciones -->
           <ul class="nav nav-tabs" id="tabsAcciones" role="tablist">
-            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tabDeposito" role="tab">Depósito</a></li>
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tabDeposito"
+                role="tab">Depósito</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tabRetiro" role="tab">Retiro</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tabConsulta" role="tab">Consulta</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tabPagos" role="tab">Pagos</a></li>
@@ -81,7 +78,8 @@
                 <label class="sr-only" for="montoDeposito">Monto</label>
                 <div class="input-group mr-2 mb-2">
                   <div class="input-group-prepend"><span class="input-group-text">$</span></div>
-                  <input type="number" class="form-control" id="montoDeposito" min="0.01" step="any" placeholder="Monto">
+                  <input type="number" class="form-control" id="montoDeposito" min="0.01" step="any"
+                    placeholder="Monto">
                 </div>
                 <button class="btn btn-success mb-2" type="submit">Depositar</button>
               </form>
@@ -121,7 +119,8 @@
                 <label class="sr-only" for="montoServicio">Monto</label>
                 <div class="input-group mr-2 mb-2">
                   <div class="input-group-prepend"><span class="input-group-text">$</span></div>
-                  <input type="number" id="montoServicio" class="form-control" min="0.01" step="any" placeholder="Monto">
+                  <input type="number" id="montoServicio" class="form-control" min="0.01" step="any"
+                    placeholder="Monto">
                 </div>
 
                 <button class="btn btn-warning mb-2" type="submit">Pagar</button>
@@ -191,4 +190,5 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="app.js"></script>
 </body>
+
 </html>
