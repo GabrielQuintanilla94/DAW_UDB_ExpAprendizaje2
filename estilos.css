@@ -1,8 +1,13 @@
-:root { --brand: #004aad; }
+:root {
+    --brand: #004aad;
+}
 
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
-html, body {
+html,
+body {
     height: 100%;
     margin: 0;
 }
@@ -15,19 +20,32 @@ body {
 }
 
 main {
-    flex: 1; 
+    flex: 1;
 }
-header h1 { font-weight: 700; }
-#tabsAcciones .nav-link { font-weight: 600; }
+
+header h1 {
+    font-weight: 700;
+}
+
+#tabsAcciones .nav-link {
+    font-weight: 600;
+}
 
 /* Tarjetas auxiliares */
-.card { border: 1px solid #e9ecef; }
+.card {
+    border: 1px solid #e9ecef;
+}
 
 /* Historial / gráfico panel spacing */
-#panelHistorial, #panelGrafico { border: 1px solid #e9ecef; }
+#panelHistorial,
+#panelGrafico {
+    border: 1px solid #e9ecef;
+}
 
 /* Estados */
-.display-4 { font-weight: 700; }
+.display-4 {
+    font-weight: 700;
+}
 
 footer {
     text-align: center;
