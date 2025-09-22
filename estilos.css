@@ -1,19 +1,8 @@
-/* ==============================
-   Variables
-============================== */
-:root {
-    --brand: #004aad;
-}
+:root { --brand: #004aad; }
 
-/* ==============================
-   Global
-============================== */
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html,
-body {
+html, body {
     height: 100%;
     margin: 0;
 }
@@ -26,47 +15,23 @@ body {
 }
 
 main {
-    flex: 1;
-    /* ocupa el espacio disponible */
+    flex: 1; 
 }
+header h1 { font-weight: 700; }
+#tabsAcciones .nav-link { font-weight: 600; }
 
-/* ==============================
-   Header
-============================== */
-header h1 {
-    font-weight: 700;
-}
+/* Tarjetas auxiliares */
+.card { border: 1px solid #e9ecef; }
 
-/* ==============================
-   Navegación
-============================== */
-#tabsAcciones .nav-link {
-    font-weight: 600;
-}
+/* Historial / gráfico panel spacing */
+#panelHistorial, #panelGrafico { border: 1px solid #e9ecef; }
 
-/* ==============================
-   Tarjetas / paneles
-============================== */
-.card {
-    border: 1px solid #e9ecef;
-}
+/* Estados */
+.display-4 { font-weight: 700; }
 
-#panelHistorial,
-#panelGrafico {
-    border: 1px solid #e9ecef;
-}
-
-/* ==============================
-   Tipografía / Estados
-============================== */
-.display-4 {
-    font-weight: 700;
-}
-
-/* ==============================
-   Footer
-============================== */
 footer {
+    text-align: center;
+    padding: 10px;
     margin-top: auto;
-    /* empuja el footer hacia abajo */
+    width: 100%;
 }

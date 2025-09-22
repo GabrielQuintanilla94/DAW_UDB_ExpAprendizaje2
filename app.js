@@ -1,7 +1,7 @@
 // ===============================
 // Helpers generales
 // ===============================
-const $ = (s) => document.querySelector(s);
+const $  = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
 const fmt = (n) => {
@@ -17,9 +17,9 @@ function swap(hideSel, showSel) { hide(hideSel); show(showSel); }
 // Estado 
 // ===============================
 const STATE_KEY = 'bank_state_v1';
-const PIN_OK = /^\d{4}$/;           // Validación de 4 dígitos
+const PIN_OK    = /^\d{4}$/;           // Validación de 4 dígitos
 const DEMO_OWNER = 'Ash Ketchum';
-const DEMO_ACC = '001-234-567';
+const DEMO_ACC   = '001-234-567';
 
 let state = loadState() || {
   ownerName: DEMO_OWNER,
@@ -29,7 +29,7 @@ let state = loadState() || {
 };
 
 function saveState() {
-  try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch { }
+  try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch {}
 }
 function loadState() {
   try { return JSON.parse(localStorage.getItem(STATE_KEY)); } catch { return null; }
@@ -39,19 +39,13 @@ function loadState() {
 // Interfaz Gráfica
 // ===============================
 function renderUser() {
-  if (sessionStorage.getItem('logged') === '1') {
-    $('#ownerName').textContent = state.ownerName;
-    $('#accountNumber').textContent = state.accountNumber;
-    $('#userInfo').classList.remove('d-none');
-  } else {
-    $('#ownerName').textContent = '';
-    $('#accountNumber').textContent = '';
-    $('#userInfo').classList.add('d-none');
-  }
+  $('#ownerName').textContent     = state.ownerName;
+  $('#accountNumber').textContent = state.accountNumber;
+  $('#userInfo').classList.remove('d-none');
 }
 
 function renderSaldo() {
-  $('#saldoActual').textContent = fmt(state.balance);
+  $('#saldoActual').textContent  = fmt(state.balance);
   $('#saldoSidebar').textContent = fmt(state.balance);
 }
 
@@ -79,6 +73,61 @@ function renderHistorial() {
   renderInto('tablaHistorial');
   renderInto('tablaHistorial2');
 }
+// Soporte
+
+function showSoporteView() {
+  hide('#view-login');
+  hide('#view-dashboard');
+  hide('#view-history');
+  hide('#view-chart');
+  show('#view-soporte');
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  ensureLogged();
+
+  $('#soporteLink')?.addEventListener('click', showSoporteView);
+
+  $('#frmSoporte')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('¡Gracias por enviar tu problema! Nos pondremos en contacto pronto.');
+    $('#problema').value = '';
+  });
+  $('#btnSalirSoporte')?.addEventListener('click', () => {
+    hide('#view-soporte');
+    show('#view-login');
+    $('#pin').value = '';
+    sessionStorage.removeItem('logged');
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const frmLogin = document.getElementById('frmLogin');
+    const pinInput = document.getElementById('pin');
+    const loginMsg = document.getElementById('loginMsg');
+    const viewLogin = document.getElementById('view-login');
+    const viewDashboard = document.getElementById('view-dashboard');
+
+    frmLogin.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const pin = pinInput.value.trim();
+        if (pin === '1234') {
+            viewLogin.classList.add('d-none');
+            viewDashboard.classList.remove('d-none');
+            loginMsg.classList.add('d-none');
+        } else {
+            loginMsg.classList.remove('d-none');
+            pinInput.classList.add('is-invalid');
+        }
+    });
+
+    pinInput.addEventListener('input', function () {
+        pinInput.classList.remove('is-invalid');
+        loginMsg.classList.add('d-none');
+    });
+});
+
 
 // ===============================
 // Gráfica de totales por tipo (Chart.js)
@@ -90,9 +139,9 @@ function getTotalsByType() {
   let deps = 0, rets = 0, pays = 0;
   for (const m of state.moves) {
     const amt = Number(m.amount) || 0;
-    if (m.type === 'Depósito') deps += Math.max(0, amt);
-    if (m.type === 'Retiro') rets += Math.abs(Math.min(0, amt));
-    if (m.type === 'Pago') pays += Math.abs(Math.min(0, amt));
+    if (m.type === 'Depósito') deps += Math.max(0,  amt);
+    if (m.type === 'Retiro')   rets += Math.abs(Math.min(0, amt));
+    if (m.type === 'Pago')     pays += Math.abs(Math.min(0, amt));
   }
   return [deps, rets, pays];
 }
@@ -120,7 +169,7 @@ function renderChart() {
       responsive: true,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: (c) => ` $${Number(c.parsed.y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` } }
+        tooltip: { callbacks: { label: (c) => ` $${Number(c.parsed.y).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 })}` } }
       },
       scales: {
         y: { beginAtZero: true, ticks: { callback: v => `$${Number(v).toLocaleString('en-US')}` } }
@@ -152,7 +201,7 @@ function renderChartVista() {
       responsive: true,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: (c) => ` $${Number(c.parsed.y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` } }
+        tooltip: { callbacks: { label: (c) => ` $${Number(c.parsed.y).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 })}` } }
       },
       scales: {
         y: { beginAtZero: true, ticks: { callback: v => `$${Number(v).toLocaleString('en-US')}` } }
@@ -241,7 +290,7 @@ async function exportHistoryPDF() {
     doc.setLineWidth(0.5); doc.line(margin, y, 555, y); y += 10;
 
     state.moves.forEach(m => {
-      const monto = `${m.amount < 0 ? '-' : ''}$${Math.abs(Number(m.amount) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const monto = `${m.amount < 0 ? '-' : ''}$${Math.abs(Number(m.amount)||0).toLocaleString('en-US',{ minimumFractionDigits:2, maximumFractionDigits:2 })}`;
       doc.text(String(m.date), margin, y);
       doc.text(String(m.type), margin + 180, y);
       doc.text(String(m.detail || '-'), margin + 280, y);
@@ -256,7 +305,7 @@ async function exportHistoryPDF() {
 // ===============================
 // Navegación / inicio
 // ===============================
-function showLogin() { swap('#view-dashboard', '#view-login'); }
+function showLogin()     { swap('#view-dashboard', '#view-login'); }
 function showDashboard() {
   swap('#view-login', '#view-dashboard');
   renderUser();
@@ -291,10 +340,10 @@ document.addEventListener('DOMContentLoaded', () => {
   ensureLogged();
 
   // --- Login ---
-  $('#frmLogin')?.addEventListener('submit', (e) => {
+   $('#frmLogin')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const pinVal = $('#pin').value.trim();
-    if (!PIN_OK.test(pinVal)) {
+    if (pinVal !== '1234') {
       $('#loginMsg').classList.remove('d-none');
       return;
     }
@@ -302,7 +351,6 @@ document.addEventListener('DOMContentLoaded', () => {
     sessionStorage.setItem('logged', '1');
     showDashboard();
   });
-
   // --- Depósito ---
   $('#frmDeposito')?.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -340,16 +388,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --- Paneles del dashboard ---
-$('#btnVerHistorial')?.addEventListener('click', () => { 
-  renderHistorial(); 
-  $('#panelHistorial').classList.toggle('d-none');
-  document.getElementById('panelHistorial')?.scrollIntoView({ behavior: 'smooth' });
-});
-  
+  $('#btnVerHistorial')?.addEventListener('click', () => {
+    renderHistorial();
+    $('#panelHistorial').classList.toggle('d-none');
+  });
   $('#btnVerGrafico')?.addEventListener('click', () => {
     renderChart();
     $('#panelGrafico').classList.toggle('d-none');
-    document.getElementById('panelGrafico')?.scrollIntoView({ behavior: 'smooth' });
   });
 
   // --- Vistas dedicadas ---
@@ -368,6 +413,5 @@ $('#btnVerHistorial')?.addEventListener('click', () => {
     sessionStorage.removeItem('logged');
     showLogin();
     $('#pin').value = '';
-    renderUser(); // Oculta usuario y número de cuenta
   });
 });
