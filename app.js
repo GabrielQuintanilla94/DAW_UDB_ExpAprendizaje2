@@ -39,9 +39,15 @@ function loadState() {
 // Interfaz Gráfica
 // ===============================
 function renderUser() {
-  $('#ownerName').textContent = state.ownerName;
-  $('#accountNumber').textContent = state.accountNumber;
-  $('#userInfo').classList.remove('d-none');
+  if (sessionStorage.getItem('logged') === '1') {
+    $('#ownerName').textContent = state.ownerName;
+    $('#accountNumber').textContent = state.accountNumber;
+    $('#userInfo').classList.remove('d-none');
+  } else {
+    $('#ownerName').textContent = '';
+    $('#accountNumber').textContent = '';
+    $('#userInfo').classList.add('d-none');
+  }
 }
 
 function renderSaldo() {
@@ -334,13 +340,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --- Paneles del dashboard ---
-  $('#btnVerHistorial')?.addEventListener('click', () => {
-    renderHistorial();
-    $('#panelHistorial').classList.toggle('d-none');
-  });
+$('#btnVerHistorial')?.addEventListener('click', () => { 
+  renderHistorial(); 
+  $('#panelHistorial').classList.toggle('d-none');
+  document.getElementById('panelHistorial')?.scrollIntoView({ behavior: 'smooth' });
+});
+  
   $('#btnVerGrafico')?.addEventListener('click', () => {
     renderChart();
     $('#panelGrafico').classList.toggle('d-none');
+    document.getElementById('panelGrafico')?.scrollIntoView({ behavior: 'smooth' });
   });
 
   // --- Vistas dedicadas ---
@@ -359,5 +368,6 @@ document.addEventListener('DOMContentLoaded', () => {
     sessionStorage.removeItem('logged');
     showLogin();
     $('#pin').value = '';
+    renderUser(); // Oculta usuario y número de cuenta
   });
 });
