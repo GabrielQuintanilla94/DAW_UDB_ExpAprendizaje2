@@ -90,7 +90,7 @@ function showSoporteView() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderUser(); 
+ renderUser(); 
   ensureLogged();
 
   $('#soporteLink')?.addEventListener('click', showSoporteView);
@@ -100,11 +100,34 @@ document.addEventListener('DOMContentLoaded', () => {
     alert('¡Gracias por enviar tu problema! Nos pondremos en contacto pronto.');
     $('#problema').value = '';
   });
+
   $('#btnSalirSoporte')?.addEventListener('click', () => {
     hide('#view-soporte');
     show('#view-login');
     $('#pin').value = '';
     sessionStorage.removeItem('logged');
+  });
+
+  // ===============================
+  // Botón escapista del login 😅
+  // ===============================
+  const btnLogin = document.getElementById('btnLogin');
+  const pinInput = document.getElementById('pin');
+
+btnLogin?.addEventListener('mousemove', () => {
+  const pinVal = pinInput.value.trim();
+  if (!PIN_OK.test(pinVal)) {
+    const offsetX = (Math.random() * 500) - 250;
+    const offsetY = (Math.random() * 150) - 75;
+    btnLogin.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+  }
+});
+
+
+  pinInput?.addEventListener('input', () => {
+    if (PIN_OK.test(pinInput.value.trim())) {
+      btnLogin.style.transform = 'translateX(0)';
+    }
   });
 });
 
