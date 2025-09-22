@@ -12,7 +12,8 @@
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     height: 100%;
     margin: 0;
 }
@@ -25,7 +26,8 @@ body {
 }
 
 main {
-    flex: 1; /* ocupa el espacio disponible */
+    flex: 1;
+    /* ocupa el espacio disponible */
 }
 
 /* ==============================
@@ -65,5 +67,6 @@ header h1 {
    Footer
 ============================== */
 footer {
-    margin-top: auto; /* empuja el footer hacia abajo */
+    margin-top: auto;
+    /* empuja el footer hacia abajo */
 }

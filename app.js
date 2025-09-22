@@ -49,32 +49,36 @@ function renderSaldo() {
   $('#saldoSidebar').textContent = fmt(state.balance);
 }
 
+// Renderiza tabla del panel y tabla de la vista (si existen)
 function renderHistorial() {
-  const tbody = $('#tablaHistorial');
-  if (!tbody) return;
-
-  if (!state.moves.length) {
-    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Sin movimientos</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = state.moves.map(m => {
-    const cls = m.amount < 0 ? 'text-danger' : (m.amount > 0 ? 'text-success' : 'text-muted');
-    return `
-      <tr>
-        <td>${m.date}</td>
-        <td>${m.type}</td>
-        <td>${m.detail || '-'}</td>
-        <td class="text-right ${cls}">${fmt(m.amount)}</td>
-      </tr>
-    `;
-  }).join('');
+  const renderInto = (tbodyId) => {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    if (!state.moves.length) {
+      tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Sin movimientos</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = state.moves.map(m => {
+      const cls = m.amount < 0 ? 'text-danger' : (m.amount > 0 ? 'text-success' : 'text-muted');
+      return `
+        <tr>
+          <td>${m.date}</td>
+          <td>${m.type}</td>
+          <td>${m.detail || '-'}</td>
+          <td class="text-right ${cls}">${fmt(m.amount)}</td>
+        </tr>
+      `;
+    }).join('');
+  };
+  renderInto('tablaHistorial');
+  renderInto('tablaHistorial2');
 }
 
 // ===============================
 // Gráfica de totales por tipo (Chart.js)
 // ===============================
 let chartTipos = null;
+let chartTiposVista = null;
 
 function getTotalsByType() {
   let deps = 0, rets = 0, pays = 0;
@@ -104,29 +108,48 @@ function renderChart() {
     type: 'bar',
     data: {
       labels: ['Depósitos', 'Retiros', 'Pagos'],
-      datasets: [{
-        label: 'Total por tipo',
-        data,
-        borderWidth: 1
-      }]
+      datasets: [{ label: 'Total por tipo', data, borderWidth: 1 }]
     },
     options: {
       responsive: true,
       plugins: {
         legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => ` $${Number(ctx.parsed.y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-          }
-        }
+        tooltip: { callbacks: { label: (c) => ` $${Number(c.parsed.y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` } }
       },
       scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: (v) => `$${Number(v).toLocaleString('en-US')}`
-          }
-        }
+        y: { beginAtZero: true, ticks: { callback: v => `$${Number(v).toLocaleString('en-US')}` } }
+      }
+    }
+  });
+}
+
+function renderChartVista() {
+  const el = document.getElementById('chartTiposVista');
+  if (!el || typeof Chart === 'undefined') return;
+
+  const [deps, rets, pays] = getTotalsByType();
+  const data = [deps, rets, pays];
+
+  if (chartTiposVista) {
+    chartTiposVista.data.datasets[0].data = data;
+    chartTiposVista.update();
+    return;
+  }
+
+  chartTiposVista = new Chart(el.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: ['Depósitos', 'Retiros', 'Pagos'],
+      datasets: [{ label: 'Total por tipo', data, borderWidth: 1 }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (c) => ` $${Number(c.parsed.y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` } }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: v => `$${Number(v).toLocaleString('en-US')}` } }
       }
     }
   });
@@ -149,9 +172,7 @@ function deposit(amount) {
   state.balance += amount;
   addMove('Depósito', '', +amount);
   saveState();
-  renderSaldo();
-  renderHistorial();
-  renderChart(); // ← actualizar gráfica
+  renderSaldo(); renderHistorial(); renderChart(); renderChartVista();
 }
 
 function withdraw(amount) {
@@ -162,9 +183,7 @@ function withdraw(amount) {
   state.balance -= amount;
   addMove('Retiro', '', -amount);
   saveState();
-  renderSaldo();
-  renderHistorial();
-  renderChart(); // ← actualizar gráfica
+  renderSaldo(); renderHistorial(); renderChart(); renderChartVista();
   return true;
 }
 
@@ -176,10 +195,56 @@ function payService(service, amount) {
   state.balance -= amount;
   addMove('Pago', service, -amount);
   saveState();
-  renderSaldo();
-  renderHistorial();
-  renderChart(); // ← actualizar gráfica
+  renderSaldo(); renderHistorial(); renderChart(); renderChartVista();
   return true;
+}
+
+// Borrar historial (con confirm nativo para evitar dependencias)
+function clearHistory() {
+  if (!state.moves.length) { alert('No hay movimientos.'); return; }
+  if (!confirm('¿Borrar el historial? Esta acción no se puede deshacer.')) return;
+  state.moves = [];
+  saveState();
+  renderHistorial(); renderChart(); renderChartVista();
+  alert('Historial borrado.');
+}
+
+// Exportar a PDF con jsPDF
+async function exportHistoryPDF() {
+  const { jsPDF } = window.jspdf || {};
+  if (!jsPDF) { alert('jsPDF no está cargado.'); return; }
+
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const margin = 40;
+  let y = margin;
+
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
+  doc.text('Historial de transacciones', margin, y); y += 20;
+
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+
+  if (!state.moves.length) {
+    doc.text('Sin movimientos', margin, y);
+  } else {
+    // Encabezados
+    doc.text('Fecha', margin, y);
+    doc.text('Tipo', margin + 180, y);
+    doc.text('Detalle', margin + 280, y);
+    doc.text('Monto', margin + 460, y, { align: 'right' });
+    y += 14;
+    doc.setLineWidth(0.5); doc.line(margin, y, 555, y); y += 10;
+
+    state.moves.forEach(m => {
+      const monto = `${m.amount < 0 ? '-' : ''}$${Math.abs(Number(m.amount) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      doc.text(String(m.date), margin, y);
+      doc.text(String(m.type), margin + 180, y);
+      doc.text(String(m.detail || '-'), margin + 280, y);
+      doc.text(monto, margin + 460, y, { align: 'right' });
+      y += 14;
+      if (y > 780) { doc.addPage(); y = margin; }
+    });
+  }
+  doc.save('historial.pdf');
 }
 
 // ===============================
@@ -191,15 +256,26 @@ function showDashboard() {
   renderUser();
   renderSaldo();
   renderHistorial();
-  renderChart(); // ← inicializar/actualizar al entrar
+  renderChart();
+  renderChartVista();
+}
+
+function showHistoryView() {
+  hide('#view-dashboard'); hide('#view-chart'); show('#view-history');
+  renderHistorial();
+}
+function showChartView() {
+  hide('#view-dashboard'); hide('#view-history'); show('#view-chart');
+  renderChartVista();
+}
+function backToDashboard() {
+  hide('#view-history'); hide('#view-chart'); show('#view-dashboard');
+  renderHistorial(); renderChart(); renderChartVista();
 }
 
 function ensureLogged() {
-  if (sessionStorage.getItem('logged') === '1') {
-    showDashboard();
-  } else {
-    showLogin();
-  }
+  if (sessionStorage.getItem('logged') === '1') showDashboard();
+  else showLogin();
 }
 
 // ===============================
@@ -238,13 +314,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (withdraw(val)) $('#montoRetiro').value = '';
   });
 
-  // --- Consulta de saldo (registra movimiento 0) ---
+  // --- Consulta (registra movimiento 0) ---
   $$('#tabsAcciones a[data-toggle="tab"]').forEach(a => {
     a.addEventListener('shown.bs.tab', (ev) => {
       if (ev.target.getAttribute('href') === '#tabConsulta') {
         addMove('Consulta', 'Saldo', 0);
-        renderHistorial();
-        renderChart(); // ← actualizar gráfica también
+        renderHistorial(); renderChart(); renderChartVista();
       }
     });
   });
@@ -258,16 +333,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (payService(servicio, val)) $('#montoServicio').value = '';
   });
 
-  // --- Paneles laterales ---
+  // --- Paneles del dashboard ---
   $('#btnVerHistorial')?.addEventListener('click', () => {
     renderHistorial();
     $('#panelHistorial').classList.toggle('d-none');
   });
-
   $('#btnVerGrafico')?.addEventListener('click', () => {
-    renderChart(); // ← aseguramos que esté actualizado al abrir
+    renderChart();
     $('#panelGrafico').classList.toggle('d-none');
   });
+
+  // --- Vistas dedicadas ---
+  $('#btnAbrirHistorialVista')?.addEventListener('click', showHistoryView);
+  $('#btnAbrirGraficoVista')?.addEventListener('click', showChartView);
+  $('#btnVolverDashboard1')?.addEventListener('click', backToDashboard);
+  $('#btnVolverDashboard2')?.addEventListener('click', backToDashboard);
+
+  // --- Borrar historial & Exportar PDF ---
+  $('#btnBorrarHistorial')?.addEventListener('click', clearHistory);
+  $('#btnExportarPDF')?.addEventListener('click', exportHistoryPDF);
+  $('#btnExportarPDFTop')?.addEventListener('click', exportHistoryPDF);
 
   // --- Salir ---
   $('#btnSalir')?.addEventListener('click', () => {
